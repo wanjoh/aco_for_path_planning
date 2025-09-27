@@ -18,7 +18,8 @@ public:
     [[nodiscard]] int getNumNodes() const noexcept { return static_cast<int>(m_adjacencyList.size()); }
     [[nodiscard]] int degree(Node n) const noexcept;
 
-    void finalize() noexcept { m_sealed = true;}
+    // Prevents further modifications to the graph
+    void finalize() noexcept { m_sealed = true; }
 private:
     std::vector<std::vector<Neighbor>> m_adjacencyList;
     bool m_sealed;

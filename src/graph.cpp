@@ -19,7 +19,7 @@ void Graph::addEdge(Node nodeU, Node nodeV, Weight weight)
 
     auto insert_unique = [](std::vector<Neighbor>& vec, Node to, Weight w) 
     {
-        if (std::none_of(vec.begin(), vec.end(), [&](const Neighbor& n) {return n.first == to;}))
+        if (std::none_of(vec.begin(), vec.end(), [&](const Neighbor& n) { return n.first == to; }))
         {
             vec.emplace_back(to, w);
         }
