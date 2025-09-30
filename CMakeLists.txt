@@ -25,6 +25,9 @@ add_library(aco_lib
 )
 target_include_directories(aco_lib PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
+enable_testing()
+add_subdirectory(tests)
+
 #  Main executable
 add_executable(aco_main
     src/main.cpp
