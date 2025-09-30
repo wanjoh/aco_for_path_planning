@@ -36,9 +36,10 @@ if (CMAKE_CUDA_COMPILER)
     enable_language(CUDA)
     target_compile_definitions(aco_main PRIVATE USE_CUDA)
     
-    set(CUDA_ARCHITECTURES "86;89")  # sets compute capability, more info https://developer.nvidia.com/cuda-gpus
     
     add_subdirectory(src/cuda)
+    set_target_properties(aco_main cuda_kernels PROPERTIES CUDA_ARCHITECTURES "86;89")  # https://developer.nvidia.com/cuda-gpus
+    
     target_link_libraries(aco_main PRIVATE cuda_kernels)
 else ()
     message(STATUS "CUDA compiler not found!")
