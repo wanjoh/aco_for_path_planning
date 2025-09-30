@@ -9,6 +9,7 @@ TEST_CASE("Graph basic functionality", "[graph]")
     {
         g.addEdge(0, 1, 10);
         g.addEdge(0, 2, 20);
+        g.addEdge(0, 2, 20);
         g.addEdge(1, 2, 30);
 
         auto neighbors0 = g.getNeighbors(0);
@@ -25,6 +26,7 @@ TEST_CASE("Graph basic functionality", "[graph]")
     SECTION("Check degree of nodes") 
     {
         g.addEdge(0, 1, 10);
+        g.addEdge(0, 2, 20);
         g.addEdge(0, 2, 20);
         g.addEdge(1, 2, 30);
 
