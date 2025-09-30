@@ -26,24 +26,19 @@ add_executable(aco_main
 )
 target_link_libraries(aco_main PRIVATE graph_lib aco_lib)
 
-# CUDA support
 include(CheckLanguage)
-check_language(CUDA)
 
+# CUDA support
+check_language(CUDA)
 if (CMAKE_CUDA_COMPILER)
+    message(STATUS "CUDA compiler found: ${CMAKE_CUDA_COMPILER}")
+    
     enable_language(CUDA)
+    target_compile_definitions(aco_main PRIVATE USE_CUDA)
     
-    set(CMAKE_CUDA_STANDARD 20)
-    set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+    set(CUDA_ARCHITECTURES "86;89")  # sets compute capability, more info https://developer.nvidia.com/cuda-gpus
     
-    add_library(cuda_kernels STATIC
-    src/cuda/aco_kernel.cu
-    )
-    set_target_properties(aco_main cuda_kernels PROPERTIES CUDA_ARCHITECTURES "86;89")
-    set_target_properties(cuda_kernels PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-    
-    # target_include_directories(cuda_kernels PUBLIC PUBLIC graph_lib)
-    
+    add_subdirectory(src/cuda)
     target_link_libraries(aco_main PRIVATE cuda_kernels)
 else ()
     message(STATUS "CUDA compiler not found!")

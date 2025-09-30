@@ -1,3 +1,6 @@
+set(FETCHCONTENT_QUIET ON)
+set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
+
 include(FetchContent)
 FetchContent_Declare(
   Catch2
