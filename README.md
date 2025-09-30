@@ -1,5 +1,6 @@
 # ACO (Ant colony optimization) for path finding using CUDA
 
 ## Requirements
-- CUDA
-- OpenCV (used for visualization)
+- CMake >= 3.12
+- Optional: NVIDIA CUDA TOOLKIT
+<!-- - OpenCV (used for visualization) -->
