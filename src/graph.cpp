@@ -10,7 +10,7 @@ Graph::Graph(int numNodes)
 {
 }
 
-void Graph::addEdge(Node nodeU, Node nodeV, Weight weight) 
+void Graph::addEdge(Node nodeU, Node nodeV, Weight weight) noexcept
 {
     assert( nodeU >= 0 && nodeU < getNumNodes() && 
             nodeV >= 0 && nodeV < getNumNodes() &&
@@ -28,7 +28,7 @@ void Graph::addEdge(Node nodeU, Node nodeV, Weight weight)
     insert_unique(m_adjacencyList[nodeV], nodeU, weight);
 }
 
-std::span<const Graph::Neighbor> Graph::getNeighbors(Node node) const 
+std::span<const Graph::Neighbor> Graph::getNeighbors(Node node) const noexcept
 {
     if (node < 0 || node >= static_cast<int>(m_adjacencyList.size()))
     {
@@ -39,7 +39,7 @@ std::span<const Graph::Neighbor> Graph::getNeighbors(Node node) const
     return {v.data(), v.size()};
 }
 
-int Graph::degree(Node n) const 
+int Graph::degree(Node n) const noexcept
 {
     return static_cast<int>(getNeighbors(n).size());
 }

@@ -13,10 +13,20 @@ file(GLOB CUDA_SOURCES src/cuda/*.cu)
 add_library(cuda_kernels STATIC ${CUDA_SOURCES})
 set_target_properties(cuda_kernels PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
-add_executable(aco_main
-    src/main.cpp
+#  Graph library
+add_library(graph_lib
     src/graph.cpp
+)
+target_include_directories(graph_lib PUBLIC ${PROJECT_SOURCE_DIR}/include)
+
+#  ACO library
+add_library(aco_lib
     src/aco.cpp
 )
+target_include_directories(aco_lib PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-target_link_libraries(aco_main PRIVATE cuda_kernels)
+#  Main executable
+add_executable(aco_main
+    src/main.cpp
+)
+target_link_libraries(aco_main PRIVATE cuda_kernels graph_lib aco_lib)
