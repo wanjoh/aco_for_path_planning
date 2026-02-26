@@ -8,6 +8,7 @@ class Graph
 {
 public:
     using Node = int;
+    constexpr static Node INVALID_NODE = -1;
     using Weight = float;
     using Neighbor = std::pair<Node, Weight>;
     explicit Graph(int numNodes);
