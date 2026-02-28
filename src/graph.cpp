@@ -10,22 +10,30 @@ Graph::Graph(int numNodes)
 {
 }
 
-void Graph::addEdge(Node nodeU, Node nodeV, Weight weight) noexcept
+namespace 
 {
-    assert( nodeU >= 0 && nodeU < getNumNodes() && 
-            nodeV >= 0 && nodeV < getNumNodes() &&
-            "Node indices must be within valid range.");
-    assert(!m_sealed && "Cannot add edges to a sealed graph.");
-
-    auto insert_unique = [](std::vector<Neighbor>& vec, Node to, Weight w) 
+    void insert_unique(std::vector<Graph::Neighbor>& vec, Graph::Node to, Graph::Weight w) 
     {
-        if (std::none_of(vec.begin(), vec.end(), [&](const Neighbor& n) { return n.first == to; }))
+        if (std::none_of(vec.begin(), vec.end(), [&](const Graph::Neighbor& n) { return n.first == to; }))
         {
             vec.emplace_back(to, w);
         }
-    };
-    insert_unique(m_adjacencyList[nodeU], nodeV, weight);
-    insert_unique(m_adjacencyList[nodeV], nodeU, weight);
+    }
+} // anonymous namespace
+
+void Graph::addDirectedEdge(Node from, Node to, Weight weight) noexcept
+{
+    assert( from >= 0 && from < getNumNodes() && 
+            to >= 0 && to < getNumNodes() &&
+            "Node indices must be within valid range.");
+    assert(!m_sealed && "Cannot add edges to a sealed graph.");
+    insert_unique(m_adjacencyList[from], to, weight);
+}
+
+void Graph::addEdge(Node nodeU, Node nodeV, Weight weight) noexcept
+{
+    addDirectedEdge(nodeU, nodeV, weight);
+    addDirectedEdge(nodeV, nodeU, weight);
 }
 
 std::span<const Graph::Neighbor> Graph::getNeighbors(Node node) const noexcept

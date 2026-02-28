@@ -13,6 +13,7 @@ public:
     using Neighbor = std::pair<Node, Weight>;
     explicit Graph(int numNodes);
 
+    void addDirectedEdge(Node from, Node to, Weight weight) noexcept;
     void addEdge(Node nodeU, Node nodeV, Weight weight) noexcept;
     
     [[nodiscard]] std::span<const Neighbor> getNeighbors(Node n) const noexcept;
@@ -22,6 +23,6 @@ public:
     // Prevents further modifications to the graph
     void finalize() noexcept { m_sealed = true; }
 private:
-    std::vector<std::vector<Neighbor>> m_adjacencyList;
+    std::vector<std::vector<Neighbor>> m_adjacencyList;  // todo: this can be vector<set> ?
     bool m_sealed;
 };

@@ -39,8 +39,13 @@ namespace ACO
                 while (currentNode != end)
                 {
                     auto neighbors = graph.getNeighbors(currentNode);
-                    std::vector<Graph::Node> candidates;
-                    std::vector<float> probabilities;
+
+                    struct MoveCandidate {
+                        Graph::Node to;
+                        Graph::Weight weight;
+                        float probability;
+                    };
+                    std::vector<MoveCandidate> candidates;
                     float probSum = 0.0f;
 
                     // probability calculation for each valid neighbor
@@ -48,12 +53,11 @@ namespace ACO
                     {
                         if (!visited[neighbor])
                         {
-                            candidates.push_back(neighbor);
                             float tau = pheromones[currentNode][neighbor];
                             float eta = 1.0f / (std::max(weight, 1e-6f));
                             
                             float prob = std::pow(tau, m_params.alpha) * std::pow(eta, m_params.beta);
-                            probabilities.push_back(prob);
+                            candidates.push_back({neighbor, weight, prob});
                             probSum += prob;
                         }
                     }
@@ -67,36 +71,22 @@ namespace ACO
                     // roulette wheel selection
                     float r = dist(rng) * probSum;
                     float runningSum = 0.0f;
-                    Graph::Node nextNode = Graph::INVALID_NODE;
-                    Graph::Weight edgeWeight = 0;
+                    MoveCandidate selected_candidate = candidates.back();  // handlign precision issues
 
                     for (size_t i = 0; i < candidates.size(); ++i)
                     {
-                        runningSum += probabilities[i];
+                        runningSum += candidates[i].probability;
                         if (runningSum >= r)
                         {
-                            nextNode = candidates[i];
+                            selected_candidate = candidates[i];
                             break;
                         }
                     }
-                    
-                    // handling float precision issues
-                    if (nextNode == Graph::INVALID_NODE) nextNode = candidates.back();
 
-                   
-                    for(const auto& [n, w] : neighbors)
-                    { 
-                        if(n == nextNode)
-                        {
-                            edgeWeight = w; 
-                            break; 
-                        }
-                    }
-
-                    visited[nextNode] = true;
-                    currentPath.nodes.push_back(nextNode);
-                    currentPath.cost += edgeWeight;
-                    currentNode = nextNode;
+                    visited[selected_candidate.to] = true;
+                    currentPath.nodes.push_back(selected_candidate.to);
+                    currentPath.cost += selected_candidate.weight;
+                    currentNode = selected_candidate.to;
                 }
 
                 if (!stuck)
