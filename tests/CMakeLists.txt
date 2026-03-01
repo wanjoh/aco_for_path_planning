@@ -11,9 +11,19 @@ FetchContent_MakeAvailable(Catch2)
 
 add_executable(test_graph
     test_graph.cpp
-)
+    )
 
 target_link_libraries(test_graph PRIVATE
+    graph_lib
+    Catch2::Catch2WithMain
+)
+
+add_executable(test_map
+    test_map.cpp
+    )
+
+target_link_libraries(test_map PRIVATE
+    map_lib
     graph_lib
     Catch2::Catch2WithMain
 )
@@ -21,3 +31,4 @@ target_link_libraries(test_graph PRIVATE
 include(CTest)
 include(Catch)
 catch_discover_tests(test_graph)
+catch_discover_tests(test_map)
