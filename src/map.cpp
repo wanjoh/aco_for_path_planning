@@ -1,6 +1,5 @@
 #include "map.hpp"
 #include <cmath>
-#include <cassert>
 
 Map::Map(const std::vector<std::string>& grid)
     : m_grid(grid)
