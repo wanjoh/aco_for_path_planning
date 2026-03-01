@@ -11,7 +11,7 @@ namespace ACO
         float alpha          = 1.0f;  // pheromone weight
         float beta           = 2.0f;  // heuristic weight
         float evaporation    = 0.5f;
-        uint32_t seed        = 919324;  // todo- change on each run?
+        uint32_t seed        = 919324;
         bool depositBestOnly = true;
         float minimumPheromone = 0.01f;
     };
