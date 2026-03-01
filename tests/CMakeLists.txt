@@ -25,6 +25,19 @@ add_executable(test_map
 target_link_libraries(test_map PRIVATE
     map_lib
     graph_lib
+    utils_lib
+    Catch2::Catch2WithMain
+)
+
+add_executable(test_aco
+    test_aco.cpp
+)
+
+target_link_libraries(test_aco PRIVATE
+    aco_lib
+    graph_lib
+    map_lib
+    utils_lib
     Catch2::Catch2WithMain
 )
 
@@ -32,3 +45,4 @@ include(CTest)
 include(Catch)
 catch_discover_tests(test_graph)
 catch_discover_tests(test_map)
+catch_discover_tests(test_aco)

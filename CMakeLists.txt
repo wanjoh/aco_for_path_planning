@@ -22,6 +22,14 @@ add_library(map_lib
 )
 target_include_directories(map_lib PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
+# Utils library
+add_library(utils_lib INTERFACE
+    ${PROJECT_SOURCE_DIR}/include/utils.hpp
+)
+
+target_link_libraries(map_lib PRIVATE graph_lib)
+target_link_libraries(aco_lib PRIVATE graph_lib utils_lib)
+
 
 # Unit tests
 enable_testing()
