@@ -1,8 +1,11 @@
 #include <iostream>
 #include "graph.hpp"
 #include "aco.hpp"
+#include "map.hpp"
+#include <vector>
+#include <string>
 
-int main() 
+int main()
 {
 #ifdef USE_CUDA
     std::cout << "Cuda is supported!" << std::endl;
@@ -10,39 +13,57 @@ int main()
     std::cout << "Cuda is not supported!" << std::endl;
 #endif
 
-    // simple graph
-    // todo: create more complex graph and add a test for it
-    // 0 --1--> 1 --1--> 3
-    // |                 ^
-    // \--2--> 2 --2-----|
-    // Optimal path: 0 -> 1 -> 3 (Cost 2.0)
-    // Suboptimal:   0 -> 2 -> 3 (Cost 4.0)
+    // 'S' is start, 'E' is end, '#' is an obstacle, '.' is walkable.
+    std::vector<std::string> grid = 
+    {
+        "S.##",
+        ".#.#",
+        ".#..",
+        "###E"
+    };
+
+    Map map(grid);
     
-    Graph graph(4);
-    graph.addEdge(0, 1, 1.0f);
-    graph.addEdge(0, 2, 2.0f);
-    graph.addEdge(1, 3, 1.0f);
-    graph.addEdge(2, 3, 2.0f);
-    graph.finalize();
-
-    ACO::Params params;
-    params.numAnts = 10;
-    params.iterations = 20;
-    params.alpha = 1.0f;
-    params.beta = 2.0f;
-    params.evaporation = 0.1f;
-
-    ACO::ACO aco(params);
+    auto startNodeOpt = map.getStartNode();
+    auto endNodeOpt = map.getEndNode();
     
-    std::cout << "Running ACO..." << std::endl;
-    auto result = aco.run(graph, 0, 3);
-
-    std::cout << "Best Path Cost: " << result.bestPath.cost << std::endl;
-    std::cout << "Path: ";
-    for (auto node : result.bestPath.nodes) {
-        std::cout << node << " ";
+    if (!startNodeOpt.has_value() || !endNodeOpt.has_value()) 
+    {
+        std::cerr << "Map must have a start ('" << Map::START << "') and an end ('" << Map::END << "') point." << std::endl;
+        return 1;
     }
-    std::cout << std::endl;
+    
+    Graph::Node startNode = *startNodeOpt;
+    Graph::Node endNode = *endNodeOpt;
+    
+    ACO::Params params;
+    params.numAnts = 20;
+    params.iterations = 50;
+    params.alpha = 1.0f;
+    params.beta = 5.0f; // Heuristic is more important in a grid
+    params.evaporation = 0.5f;
+    params.seed = 1234;
+    
+    ACO::ACO aco(params);
+    Graph graph = map.toGraph();
+    
+    std::cout << "Running ACO on map..." << std::endl;
+    auto result = aco.run(graph, startNode, endNode);
+
+    if (result.bestPath.cost >= ACO::Result::NO_PATH_COST)
+        std::cout << "No path found." << std::endl;
+    else 
+    {
+        std::cout << "Best Path Cost: " << result.bestPath.cost << std::endl;
+        std::cout << "Path: ";
+        for (auto node : result.bestPath.nodes) 
+        {
+            int x = node / map.getWidth();
+            int y = node % map.getWidth();
+            std::cout << "(" << x << "," << y << ") ";
+        }
+        std::cout << std::endl;
+    }
 
     return 0;
 }

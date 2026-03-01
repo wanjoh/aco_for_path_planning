@@ -16,6 +16,13 @@ add_library(aco_lib
 )
 target_include_directories(aco_lib PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
+# Map library
+add_library(map_lib
+    src/map.cpp
+)
+target_include_directories(map_lib PUBLIC ${PROJECT_SOURCE_DIR}/include)
+
+
 # Unit tests
 enable_testing()
 add_subdirectory(tests)
@@ -24,7 +31,7 @@ add_subdirectory(tests)
 add_executable(aco_main
     src/main.cpp
 )
-target_link_libraries(aco_main PRIVATE graph_lib aco_lib)
+target_link_libraries(aco_main PRIVATE graph_lib aco_lib map_lib)
 
 include(CheckLanguage)
 
