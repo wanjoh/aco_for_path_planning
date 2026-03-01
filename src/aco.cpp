@@ -16,7 +16,7 @@ Result ACO::run(const Graph& graph, Graph::Node start, Graph::Node end) noexcept
     std::mt19937 rng(m_params.seed);
     std::uniform_real_distribution<float> dist(0.0f, 1.0f);
 
-    result.bestPath.cost = std::numeric_limits<Graph::Weight>::max();
+    result.bestPath.cost = Result::NO_PATH_COST;
 
     for (int iter = 0; iter < m_params.iterations; ++iter)
     {
@@ -113,12 +113,9 @@ Result ACO::run(const Graph& graph, Graph::Node start, Graph::Node end) noexcept
         }
         
         // record history
-        if (result.bestPath.cost != std::numeric_limits<Graph::Weight>::max())
-            result.costPerIteration.push_back(result.bestPath.cost);
-        else 
-            result.costPerIteration.push_back(Result::NO_PATH_COST);
+        result.costPerIteration.push_back(result.bestPath.cost);
 
-        // eeposit pheromones
+        // deposit pheromones
         if (m_params.depositBestOnly)
         {
             if (result.bestPath.nodes.size() > 1)
