@@ -1,5 +1,4 @@
 #include "map.hpp"
-#include <cmath>
 
 Map::Map(const std::vector<std::string>& grid)
     : m_grid(grid)
@@ -8,29 +7,29 @@ Map::Map(const std::vector<std::string>& grid)
     , m_startNode(std::nullopt)
     , m_endNode(std::nullopt)
 {
-    for (int x = 0; x < m_height; ++x) 
+    for (int row = 0; row < m_height; ++row) 
     {
-        for (int y = 0; y < m_width; ++y) 
+        for (int col = 0; col < m_width; ++col) 
         {
-            if (m_grid[x][y] == START) 
-                m_startNode = toNodeId(x, y);
-            else if (m_grid[x][y] == END)
-                m_endNode = toNodeId(x, y);
+            if (m_grid[row][col] == START) 
+                m_startNode = toNodeId(row, col);
+            else if (m_grid[row][col] == END)
+                m_endNode = toNodeId(row, col);
         }
     }
     // todo : add check for multiple starts and ends; add check for non-rectangular grid
 }
 
-bool Map::isWalkable(int x, int y) const 
+bool Map::isWalkable(int row, int col) const 
 {
-    if (x < 0 || x >= m_height || y < 0 || y >= m_width)
+    if (row < 0 || row >= m_height || col < 0 || col >= m_width)
         return false;
-    return m_grid[x][y] != OBSTACLE;
+    return m_grid[row][col] != OBSTACLE;
 }
 
-int Map::toNodeId(int x, int y) const 
+int Map::toNodeId(int row, int col) const 
 {
-    return x * m_width + y;
+    return row * m_width + col;
 }
 
 Graph Map::toGraph() const 
@@ -38,35 +37,32 @@ Graph Map::toGraph() const
     const int numNodes = m_width * m_height;
     Graph graph(numNodes);
 
-    static const float cardinalWeight = 1.0f;
-    static const float diagonalWeight = std::sqrt(2.0f);
-
-    for (int x = 0; x < m_height; ++x) {
-        for (int y = 0; y < m_width; ++y) 
+    for (int row = 0; row < m_height; ++row) {
+        for (int col = 0; col < m_width; ++col) 
         {
-            if (!isWalkable(x, y))
+            if (!isWalkable(row, col))
                 continue;
 
-            Graph::Node currentNode = toNodeId(x, y);
+            Graph::Node currentNode = toNodeId(row, col);
 
             // add neighbors
-            for (int dx = -1; dx <= 1; ++dx)
+            for (int dRow = -1; dRow <= 1; ++dRow)
             {
-                for (int dy = -1; dy <= 1; ++dy) 
+                for (int dCol = -1; dCol <= 1; ++dCol) 
                 {
-                    if (dx == 0 && dy == 0)
+                    if (dRow == 0 && dCol == 0)
                         continue;
 
-                    int nx = x + dx;
-                    int ny = y + dy;
+                    int nRow = row + dRow;
+                    int nCol = col + dCol;
 
-                    if (isWalkable(nx, ny)) 
+                    if (isWalkable(nRow, nCol)) 
                     {
                         // a more advanced implementation might prevent diagonal movement
                         // if the path is "squeezing" between two obstacles; for now it's allowed.
-                        Graph::Node neighborNode = toNodeId(nx, ny);
-                        bool isDiagonal = (dx != 0 && dy != 0);
-                        float weight = isDiagonal ? diagonalWeight : cardinalWeight;
+                        Graph::Node neighborNode = toNodeId(nRow, nCol);
+                        bool isDiagonal = (dRow != 0 && dCol != 0);
+                        float weight = isDiagonal ? DIAGONAL_WEIGHT : CARDINAL_WEIGHT;
                         
                         graph.addDirectedEdge(currentNode, neighborNode, weight);
                     }

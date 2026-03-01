@@ -5,12 +5,15 @@
 #include <string>
 #include <optional>
 
+
 class Map
 {
 public:
     static constexpr char OBSTACLE = '#';
     static constexpr char START = 'S';
     static constexpr char END = 'E';
+    static constexpr float CARDINAL_WEIGHT = 1.0f;
+    static constexpr float DIAGONAL_WEIGHT = 1.41421356237f; // sqrt(2)
     explicit Map(const std::vector<std::string>& grid);
 
     [[nodiscard]] Graph toGraph() const;
@@ -22,8 +25,8 @@ public:
     [[nodiscard]] int getHeight() const { return m_height; }
 
 private:
-    [[nodiscard]] bool isWalkable(int x, int y) const;
-    [[nodiscard]] int toNodeId(int x, int y) const;
+    [[nodiscard]] bool isWalkable(int row, int col) const;
+    [[nodiscard]] int toNodeId(int row, int col) const;
 
     std::vector<std::string> m_grid;
     int m_height;
