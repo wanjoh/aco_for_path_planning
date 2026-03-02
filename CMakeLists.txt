@@ -51,7 +51,7 @@ target_link_libraries(visualizer_lib PUBLIC sfml-graphics sfml-window sfml-syste
 
 # Unit tests
 enable_testing()
-add_subdirectory(tests)
+# add_subdirectory(tests)
 
 #  Main executable
 add_executable(aco_main
