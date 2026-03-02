@@ -4,9 +4,10 @@
 
 namespace ACO
 {
+    static constexpr int NUM_ANTS = 64; 
     struct Params
     {
-        int numAnts          = 64;
+        // int numAnts          = 64;
         int iterations       = 100;
         float alpha          = 1.0f;  // pheromone weight
         float beta           = 2.0f;  // heuristic weight

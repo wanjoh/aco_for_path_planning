@@ -22,6 +22,17 @@ public:
 
     // Prevents further modifications to the graph
     void finalize() noexcept { m_sealed = true; }
+
+    // compressed sparce row format for GPU
+    struct CSR
+    {
+        std::vector<int> row_offsets; // size = numNodes + 1
+        std::vector<Node> col_indices; // size = numEdges
+        std::vector<Weight> weights; // size = numEdges
+    };
+    [[nodiscard]] CSR toCSR() const;
+    
+
 private:
     std::vector<std::vector<Neighbor>> m_adjacencyList;  // todo: this can be vector<set> ?
     bool m_sealed;

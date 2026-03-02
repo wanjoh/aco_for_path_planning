@@ -51,3 +51,21 @@ int Graph::degree(Node n) const noexcept
 {
     return static_cast<int>(getNeighbors(n).size());
 }
+
+Graph::CSR Graph::toCSR() const
+{
+    CSR csr;
+    csr.row_offsets.reserve(m_adjacencyList.size() + 1);
+    csr.row_offsets.push_back(0);
+
+    for (const auto& neighbors : m_adjacencyList)
+    {
+        for (const auto& neighbor : neighbors)
+        {
+            csr.col_indices.push_back(neighbor.first);
+            csr.weights.push_back(neighbor.second);
+        }
+        csr.row_offsets.push_back(static_cast<int>(csr.col_indices.size()));
+    }
+    return csr;
+}

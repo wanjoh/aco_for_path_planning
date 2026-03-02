@@ -21,9 +21,9 @@ Result ACO::run(const Graph& graph, Graph::Node start, Graph::Node end) noexcept
     for (int iter = 0; iter < m_params.iterations; ++iter)
     {
         std::vector<Path> antPaths;
-        antPaths.reserve(m_params.numAnts);
+        antPaths.reserve(NUM_ANTS);
 
-        for (int k = 0; k < m_params.numAnts; ++k)
+        for (int k = 0; k < NUM_ANTS; ++k)
         {
             Path currentPath;
             currentPath.nodes.push_back(start);

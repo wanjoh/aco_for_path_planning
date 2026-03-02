@@ -25,7 +25,6 @@ TEST_CASE("ACO basic functionality", "[aco]")
     Graph::Node endNode = *endNodeOpt;
     
     ACO::Params params;
-    params.numAnts = 20;
     params.iterations = 50;
     params.alpha = 1.0f;
     params.beta = 5.0f;

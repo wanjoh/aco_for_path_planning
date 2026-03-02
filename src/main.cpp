@@ -2,8 +2,16 @@
 #include "graph.hpp"
 #include "aco.hpp"
 #include "map.hpp"
+#include "utils.hpp"
+
 #include <vector>
 #include <string>
+#include <chrono>
+
+#ifdef USE_CUDA
+#include "aco_cuda.cuh"
+#endif
+
 
 int main()
 {
@@ -37,7 +45,6 @@ int main()
     Graph::Node endNode = *endNodeOpt;
     
     ACO::Params params;
-    params.numAnts = 20;
     params.iterations = 50;
     params.alpha = 1.0f;
     params.beta = 5.0f; // Heuristic is more important in a grid
@@ -48,9 +55,17 @@ int main()
     Graph graph = map.toGraph();
     
     std::cout << "Running ACO on map..." << std::endl;
-    auto result = aco.run(graph, startNode, endNode);
+    auto start = std::chrono::high_resolution_clock::now();
+    
+    ACO::Result result;
+#ifdef USE_CUDA
+    result = ACO::run_cuda(graph, startNode, endNode, params);
+#else
+    result = aco.run(graph, startNode, endNode);
+#endif
+    std::cout << "ACO completed in " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count() << " ms" << std::endl;
 
-    if (result.bestPath.cost >= ACO::Result::NO_PATH_COST)
+    if (utils::isSimilar(result.bestPath.cost, ACO::Result::NO_PATH_COST))
         std::cout << "No path found." << std::endl;
     else 
     {
