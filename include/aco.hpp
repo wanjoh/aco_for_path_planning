@@ -6,8 +6,8 @@ namespace ACO
 {
     struct Params
     {
-        int numAnts          = 64;
-        int iterations       = 100;
+        int numAnts          = 32;
+        int iterations       = 50;
         float alpha          = 1.0f;  // pheromone weight
         float beta           = 2.0f;  // heuristic weight
         float evaporation    = 0.5f;

@@ -2,8 +2,23 @@
 #include "graph.hpp"
 #include "aco.hpp"
 #include "map.hpp"
+#include "visualizer.hpp"
 #include <vector>
 #include <string>
+#include <chrono>
+#include "utils.hpp"
+
+namespace
+{
+    // 'S' is start, 'E' is end, '#' is an obstacle, '.' is walkable.
+    const std::vector<std::string> DEFAULT_MAP = 
+    {
+        "S.##",
+        ".#.#",
+        ".#..",
+        "###E"
+    };
+}
 
 int main()
 {
@@ -13,16 +28,7 @@ int main()
     std::cout << "Cuda is not supported!" << std::endl;
 #endif
 
-    // 'S' is start, 'E' is end, '#' is an obstacle, '.' is walkable.
-    std::vector<std::string> grid = 
-    {
-        "S.##",
-        ".#.#",
-        ".#..",
-        "###E"
-    };
-
-    Map map(grid);
+    Map map(DEFAULT_MAP);
     
     auto startNodeOpt = map.getStartNode();
     auto endNodeOpt = map.getEndNode();
@@ -37,20 +43,16 @@ int main()
     Graph::Node endNode = *endNodeOpt;
     
     ACO::Params params;
-    params.numAnts = 20;
-    params.iterations = 50;
-    params.alpha = 1.0f;
-    params.beta = 5.0f; // Heuristic is more important in a grid
-    params.evaporation = 0.5f;
-    params.seed = 1234;
-    
     ACO::ACO aco(params);
     Graph graph = map.toGraph();
     
     std::cout << "Running ACO on map..." << std::endl;
+    auto start_time = std::chrono::high_resolution_clock::now();
     auto result = aco.run(graph, startNode, endNode);
+    auto end_time = std::chrono::high_resolution_clock::now();
+    std::cout << "ACO completed in " << std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count() << " ms" << std::endl;
 
-    if (result.bestPath.cost >= ACO::Result::NO_PATH_COST)
+    if (utils::isSimilar(result.bestPath.cost, ACO::Result::NO_PATH_COST))
         std::cout << "No path found." << std::endl;
     else 
     {
@@ -64,6 +66,9 @@ int main()
         }
         std::cout << std::endl;
     }
+
+    Visualizer visualizer(map, result);
+    visualizer.run();
 
     return 0;
 }
