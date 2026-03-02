@@ -27,6 +27,13 @@ bool Map::isWalkable(int row, int col) const
     return m_grid[row][col] != OBSTACLE;
 }
 
+char Map::getCell(int row, int col) const
+{
+    if (row < 0 || row >= m_height || col < 0 || col >= m_width)
+        return OBSTACLE;
+    return m_grid[row][col];
+}
+
 int Map::toNodeId(int row, int col) const 
 {
     return row * m_width + col;

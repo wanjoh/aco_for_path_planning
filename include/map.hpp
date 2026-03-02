@@ -24,6 +24,8 @@ public:
     [[nodiscard]] int getWidth() const { return m_width; }
     [[nodiscard]] int getHeight() const { return m_height; }
 
+    [[nodiscard]] char getCell(int row, int col) const;
+
 private:
     [[nodiscard]] bool isWalkable(int row, int col) const;
     [[nodiscard]] int toNodeId(int row, int col) const;
