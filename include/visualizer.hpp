@@ -48,4 +48,6 @@ private:
     std::unique_ptr<sf::RectangleShape> m_middleTextRect;
     std::unique_ptr<sf::Text> m_middleText;
     int m_currentIteration;
+    bool m_isInputActive;
+    std::string m_inputBuffer;
 };

@@ -1,6 +1,7 @@
 #include "visualizer.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <algorithm>
 
 
 namespace
@@ -19,6 +20,7 @@ Visualizer::Visualizer(const Map& map, const ACO::Result& result)
     , m_rightArrow(std::make_unique<sf::ConvexShape>(3))
     , m_leftArrow(std::make_unique<sf::ConvexShape>(3))
     , m_font(std::make_unique<sf::Font>())
+    , m_isInputActive(false)
 {
     m_leftBtn->setSize(sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT));
     m_leftBtn->setPosition(BUTTON_PADDING, BUTTON_PADDING);
@@ -181,17 +183,68 @@ void Visualizer::update(const sf::Event& event, const sf::Vector2i& mousePos)
 {
     if (isMouseClicked(event))
     {
-        if (isButtonHovered(*m_leftBtn, mousePos))
+        if (m_middleTextRect->getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)))
         {
-            m_currentIteration = std::max(0, m_currentIteration - 1);
+            m_isInputActive = true;
+            m_inputBuffer = std::to_string(m_currentIteration + 1);
+            m_middleTextRect->setOutlineColor(sf::Color::Blue);
         }
-        else if (isButtonHovered(*m_rightBtn, mousePos))
+        else
         {
-            m_currentIteration = std::min(static_cast<int>(m_result.pathsPerIteration.size()) - 1, m_currentIteration + 1);
+            if (m_isInputActive)
+            {
+                m_isInputActive = false;
+                m_middleTextRect->setOutlineColor(sf::Color::Black);
+                try {
+                    if (!m_inputBuffer.empty()) {
+                        int val = std::stoi(m_inputBuffer);
+                        m_currentIteration = std::clamp(val - 1, 0, static_cast<int>(m_result.pathsPerIteration.size()) - 1);
+                    }
+                } catch (...) {}
+            }
+
+            if (isButtonHovered(*m_leftBtn, mousePos))
+            {
+                m_currentIteration = std::max(0, m_currentIteration - 1);
+            }
+            else if (isButtonHovered(*m_rightBtn, mousePos))
+            {
+                m_currentIteration = std::min(static_cast<int>(m_result.pathsPerIteration.size()) - 1, m_currentIteration + 1);
+            }
+        }
+    }
+    else if (m_isInputActive && event.type == sf::Event::TextEntered)
+    {
+        if (event.text.unicode == '\b') // Backspace
+        {
+            if (!m_inputBuffer.empty())
+                m_inputBuffer.pop_back();
+        }
+        else if (event.text.unicode == 13) // Enter
+        {
+            m_isInputActive = false;
+            m_middleTextRect->setOutlineColor(sf::Color::Black);
+            try {
+                if (!m_inputBuffer.empty()) {
+                    int val = std::stoi(m_inputBuffer);
+                    m_currentIteration = std::clamp(val - 1, 0, static_cast<int>(m_result.pathsPerIteration.size()) - 1);
+                }
+            } catch (...) {}
+        }
+        else if (event.text.unicode >= '0' && event.text.unicode <= '9')
+        {
+            m_inputBuffer += static_cast<char>(event.text.unicode);
         }
     }
 
-    m_middleText->setString("Iteracija " + std::to_string(m_currentIteration + 1));
+    if (m_isInputActive)
+        m_middleText->setString("Iteracija " + m_inputBuffer);
+    else
+        m_middleText->setString("Iteracija " + std::to_string(m_currentIteration + 1));
+
+    sf::FloatRect textRect = m_middleText->getLocalBounds();
+    m_middleText->setOrigin(textRect.left + textRect.width / 2.0f,
+               textRect.top + textRect.height / 2.0f - BUTTON_PADDING / 2);
 }
 
 inline bool Visualizer::isMouseClicked(const sf::Event &event)
