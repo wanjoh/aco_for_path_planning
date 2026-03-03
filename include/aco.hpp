@@ -6,8 +6,8 @@ namespace ACO
 {
     struct Params
     {
-        int numAnts          = 32;
-        int iterations       = 50;
+        int numAnts          = 64;
+        int iterations       = 100;
         float alpha          = 1.0f;  // pheromone weight
         float beta           = 2.0f;  // heuristic weight
         float evaporation    = 0.5f;
@@ -18,15 +18,15 @@ namespace ACO
 
     struct Path
     {
+        static constexpr Graph::Weight NO_PATH_COST = std::numeric_limits<Graph::Weight>::max();
         std::vector<Graph::Node> nodes;
-        Graph::Weight cost = 0;
+        Graph::Weight cost = NO_PATH_COST;
     };
 
     struct Result
     {
         Path bestPath;
-        std::vector<Graph::Weight> costPerIteration;
-        static constexpr Graph::Weight NO_PATH_COST = std::numeric_limits<Graph::Weight>::max();
+        std::vector<Path> pathsPerIteration;
     };
 
     class ACO

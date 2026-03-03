@@ -16,7 +16,7 @@ Result ACO::run(const Graph& graph, Graph::Node start, Graph::Node end) noexcept
     std::mt19937 rng(m_params.seed);
     std::uniform_real_distribution<float> dist(0.0f, 1.0f);
 
-    result.bestPath.cost = Result::NO_PATH_COST;
+    result.bestPath.cost = Path::NO_PATH_COST;
 
     for (int iter = 0; iter < m_params.iterations; ++iter)
     {
@@ -103,17 +103,18 @@ Result ACO::run(const Graph& graph, Graph::Node start, Graph::Node end) noexcept
             }
         }
 
-        // update global best path
+        // get best path for this iteration
+        Path currentBest;
         for (const auto& path : antPaths)
         {
-            if (path.cost < result.bestPath.cost)
+            if (path.cost < currentBest.cost)
             {
-                result.bestPath = path;
+                currentBest = path;
             }
         }
         
-        // record history
-        result.costPerIteration.push_back(result.bestPath.cost);
+        result.pathsPerIteration.push_back(currentBest);
+        result.bestPath = currentBest.cost < result.bestPath.cost ? currentBest : result.bestPath;
 
         // deposit pheromones
         if (m_params.depositBestOnly)
