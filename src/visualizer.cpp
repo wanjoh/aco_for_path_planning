@@ -108,7 +108,7 @@ void Visualizer::drawGrid(sf::RenderWindow* window)
     int cols = m_map.getWidth();
 
     float cellWidth = windowWidth / cols;
-    float cellHeight = windowHeight / rows;
+    float cellHeight = (windowHeight - HEADER_PADDING) / rows;
 
     sf::RectangleShape cell(sf::Vector2f(cellWidth - 1.0f, cellHeight - 1.0f)); // -1 for the gap, maybe too hacky
 
@@ -148,7 +148,7 @@ void Visualizer::drawPath(sf::RenderWindow* window, int iteration)
     int cols = m_map.getWidth();
 
     float cellWidth = windowWidth / cols;
-    float cellHeight = windowHeight / rows;
+    float cellHeight = (windowHeight - HEADER_PADDING) / rows;
 
     sf::VertexArray lines(sf::LinesStrip);
 
