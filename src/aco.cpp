@@ -11,7 +11,7 @@ Result ACO::run(const Graph& graph, Graph::Node start, Graph::Node end) noexcept
     Result result;
     const int numNodes = graph.getNumNodes();
     
-    std::vector<std::vector<float>> pheromones(numNodes, std::vector<float>(numNodes, 0.1f));
+    std::vector<std::vector<float>> pheromones(numNodes, std::vector<float>(numNodes, m_params.minimumPheromone));
 
     std::mt19937 rng(m_params.seed);
     std::uniform_real_distribution<float> dist(0.0f, 1.0f);
