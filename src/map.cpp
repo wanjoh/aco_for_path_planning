@@ -11,10 +11,12 @@ Map::Map(const std::vector<std::string>& grid)
     {
         for (int col = 0; col < m_width; ++col) 
         {
-            if (m_grid[row][col] == START) 
+            if (m_grid[row][col] == START)
                 m_startNode = toNodeId(row, col);
             else if (m_grid[row][col] == END)
                 m_endNode = toNodeId(row, col);
+            else if (m_grid[row][col] == WAYPOINT)
+                m_waypoints.push_back(toNodeId(row, col));
         }
     }
     // todo : add check for multiple starts and ends; add check for non-rectangular grid

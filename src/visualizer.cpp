@@ -125,6 +125,8 @@ void Visualizer::drawGrid(sf::RenderWindow* window)
                 cell.setFillColor(sf::Color::Green);
             else if (type == Map::END)
                 cell.setFillColor(sf::Color::Red);
+            else if (type == Map::WAYPOINT)
+                cell.setFillColor(sf::Color(255, 140, 0)); // orange
             else
                 cell.setFillColor(sf::Color::White);
 

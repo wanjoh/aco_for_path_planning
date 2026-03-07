@@ -29,12 +29,25 @@ namespace ACO
         std::vector<Path> pathsPerIteration;
     };
 
+    struct TSPResult
+    {
+        std::vector<Graph::Node> bestVisitOrder;
+        Graph::Weight bestCost = Path::NO_PATH_COST;
+        Result acoResult;
+    };
+
     class ACO
     {
     public:
         explicit ACO(ACO::Params params) noexcept : m_params(std::move(params)) {}
 
         [[nodiscard]] Result run(const Graph& graph, Graph::Node start, Graph::Node end) noexcept;
+
+        // finds optimal ordering of waypoints
+        // uses Dijkstra to precompute pairwise costs, then ACO to optimize the visit order
+        [[nodiscard]] TSPResult runTSP(const Graph& graph, Graph::Node start, Graph::Node end,
+                                       const std::vector<Graph::Node>& waypoints) noexcept;
+
         [[nodiscard]] const Params& getParams() const noexcept { return m_params; }
 
     private:

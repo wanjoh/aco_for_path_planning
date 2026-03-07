@@ -3,6 +3,7 @@
 #include <vector>
 #include <utility>
 #include <span>
+#include <limits>
 
 class Graph
 {
@@ -26,3 +27,8 @@ private:
     std::vector<std::vector<Neighbor>> m_adjacencyList;  // todo: this can be vector<set> ?
     bool m_sealed;
 };
+
+// returns {distances, predecessors} from source using Dijkstra's algorithm
+// distances[n] == max_float if n is unreachable; predecessors[n] == INVALID_NODE for the source
+std::pair<std::vector<Graph::Weight>, std::vector<Graph::Node>>
+dijkstraWithPrev(const Graph& graph, Graph::Node source);

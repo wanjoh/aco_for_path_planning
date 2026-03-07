@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <queue>
 
 
 Graph::Graph(int numNodes) 
@@ -50,4 +51,35 @@ std::span<const Graph::Neighbor> Graph::getNeighbors(Node node) const noexcept
 int Graph::degree(Node n) const noexcept
 {
     return static_cast<int>(getNeighbors(n).size());
+}
+
+std::pair<std::vector<Graph::Weight>, std::vector<Graph::Node>>
+dijkstraWithPrev(const Graph& graph, Graph::Node source)
+{
+    const int n = graph.getNumNodes();
+    constexpr Graph::Weight INF = std::numeric_limits<Graph::Weight>::max();
+    std::vector<Graph::Weight> dist(n, INF);
+    std::vector<Graph::Node> prev(n, Graph::INVALID_NODE);
+    dist[source] = 0.0f;
+
+    using Entry = std::pair<Graph::Weight, Graph::Node>;
+    std::priority_queue<Entry, std::vector<Entry>, std::greater<Entry>> pq;
+    pq.push({0.0f, source});
+
+    while (!pq.empty())
+    {
+        auto [d, u] = pq.top(); pq.pop();
+        if (d > dist[u]) continue;
+        for (const auto& [v, w] : graph.getNeighbors(u))
+        {
+            float nd = dist[u] + w;
+            if (nd < dist[v])
+            {
+                dist[v] = nd;
+                prev[v] = u;
+                pq.push({nd, v});
+            }
+        }
+    }
+    return {dist, prev};
 }
