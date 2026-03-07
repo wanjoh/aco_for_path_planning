@@ -164,12 +164,16 @@ static std::vector<Graph::Node> reconstructGridPath(const std::vector<Graph::Nod
 TSPResult ACO::runTSP(const Graph& graph, Graph::Node start, Graph::Node end,
                       const std::vector<Graph::Node>& waypoints) noexcept
 {
+    // classic TSP (end == INVALID_NODE): ants visit all waypoints then return to start
+    // path TSP (end valid): ants visit all waypoints then proceed to a fixed end node
+    const bool classicTSP = (end == Graph::INVALID_NODE);
+
     std::vector<Graph::Node> keyNodes;
     keyNodes.push_back(start);
     for (auto w : waypoints) keyNodes.push_back(w);
-    keyNodes.push_back(end);
+    if (!classicTSP) keyNodes.push_back(end);
     const int K = static_cast<int>(keyNodes.size());
-    const int numWaypoints = K - 2;
+    const int numWaypoints = classicTSP ? K - 1 : K - 2;
 
     constexpr Graph::Weight INF = Path::NO_PATH_COST;
     std::vector<std::vector<Graph::Weight>> distMatrix(K, std::vector<Graph::Weight>(K, INF));
@@ -206,7 +210,7 @@ TSPResult ACO::runTSP(const Graph& graph, Graph::Node start, Graph::Node end,
             tour.push_back(0); // always start at index 0
             std::vector<bool> visited(K, false);
             visited[0] = true;
-            visited[K - 1] = true; // reserve end; ants pick it last
+            if (!classicTSP) visited[K - 1] = true; // reserve fixed end; ants pick it last
 
             int current = 0;
             bool stuck = false;
@@ -244,9 +248,10 @@ TSPResult ACO::runTSP(const Graph& graph, Graph::Node start, Graph::Node end,
                 current = selected;
             }
 
-            if (!stuck && distMatrix[current][K - 1] < INF)
+            const int lastDest = classicTSP ? 0 : K - 1;
+            if (!stuck && distMatrix[current][lastDest] < INF)
             {
-                tour.push_back(K - 1);
+                tour.push_back(lastDest);
                 Graph::Weight tourCost = 0.0f;
                 bool valid = true;
                 for (int t = 0; t < static_cast<int>(tour.size()) - 1; ++t)
